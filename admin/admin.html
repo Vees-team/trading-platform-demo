@@ -1,76 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Admin Panel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
+<script>
+  function verifyEmail() {
+    localStorage.setItem("emailVerified", "true");
+    document.getElementById("emailStatus").innerText = "Verified";
+    document.getElementById("emailStatus").style.color = "#22c55e";
+    alert("Email verified successfully.");
+  }
 
-<body style="margin:0;background:#0b0f1a;color:#ffffff;font-family:Arial;">
+  function approveKYC() {
+    localStorage.setItem("kycApproved", "true");
+    document.getElementById("kycStatus").innerText = "Approved";
+    document.getElementById("kycStatus").style.color = "#22c55e";
+    alert("KYC approved.");
+  }
 
-  <!-- HEADER -->
-  <div style="padding:20px;background:#111827;">
-    <h2>Admin Control Panel</h2>
-    <p style="opacity:0.7;font-size:14px;">
-      Full administrative access
-    </p>
-  </div>
-
-  <!-- USER CARD -->
-  <div style="margin:20px;background:#111827;padding:20px;border-radius:10px;">
-
-    <h3>User: investor@email.com</h3>
-
-    <p>Email Status:
-      <span id="emailStatus" style="color:#facc15;">Pending</span>
-    </p>
-
-    <p>KYC Status:
-      <span id="kycStatus" style="color:#facc15;">Pending</span>
-    </p>
-
-    <p>Account Balance:
-      <strong>$0.00</strong>
-    </p>
-
-    <!-- ACTION BUTTONS -->
-    <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
-
-      <button onclick="verifyEmail()"
-        style="padding:10px 14px;background:#22c55e;border:none;border-radius:6px;">
-        Approve Email
-      </button>
-
-      <button onclick="approveKYC()"
-        style="padding:10px 14px;background:#3b82f6;border:none;border-radius:6px;">
-        Approve KYC
-      </button>
-
-      <button onclick="enableWithdrawals()"
-        style="padding:10px 14px;background:#a855f7;border:none;border-radius:6px;">
-        Enable Withdrawals
-      </button>
-
-    </div>
-
-  </div>
-
-  <script>
-    function verifyEmail() {
-      document.getElementById("emailStatus").innerText = "Verified";
-      document.getElementById("emailStatus").style.color = "#22c55e";
-      alert("Email verified successfully.");
-    }
-
-    function approveKYC() {
-      document.getElementById("kycStatus").innerText = "Approved";
-      document.getElementById("kycStatus").style.color = "#22c55e";
-      alert("KYC approved.");
-    }
-
-    function enableWithdrawals() {
-      alert("Withdrawals have been enabled for this account.");
-    }
-  </script>
-
-</body>
-</html>
+  function enableWithdrawals() {
+    localStorage.setItem("withdrawalsEnabled", "true");
+    alert("Withdrawals enabled for this account.");
+  }
+</script>
