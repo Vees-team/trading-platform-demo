@@ -1,24 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Trading Platform Demo</title>
+  <title>Trade Global Markets</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body style="background:#0b0f1a;color:#ffffff;font-family:Arial;padding:20px;">
 
-  <h1>📊 Trading Platform Demo</h1>
-  <p>Simulated trading environment for demonstration purposes only.</p>
+<body style="margin:0;background:#0b0f1a;color:#ffffff;font-family:Arial;">
 
-  <hr>
+  <!-- TOP MARKET BAR -->
+  <div style="background:#111827;padding:10px;font-size:14px;text-align:center;">
+    Bitcoin [BTC] $88,101.12 <span style="color:#ff4d4d;">-1.72%</span> &nbsp;&nbsp;
+    Ethereum [ETH] $2,934.72
+  </div>
 
-  <p>
-    <a href="user/dashboard.html" style="color:#4da3ff;">User Dashboard</a>
-  </p>
+  <!-- HERO SECTION -->
+  <div style="padding:40px 20px;text-align:center;">
 
-  <p>
-    <a href="admin/admin.html" style="color:#ff8c4d;">Admin Panel</a>
-  </p>
+    <span style="background:#1e293b;padding:6px 14px;border-radius:20px;font-size:12px;color:#3b82f6;">
+      INNOVATIVE TRADING PLATFORM
+    </span>
+
+    <h1 style="margin-top:25px;font-size:32px;">
+      Trade Global Markets<br>
+      <span style="color:#3b82f6;">With Confidence</span>
+    </h1>
+
+    <p style="opacity:0.8;margin-top:20px;">
+      Access advanced trading tools for Forex, Cryptocurrencies,
+      Commodities, Indices, and more with competitive spreads and
+      lightning-fast execution.
+    </p>
+
+    <!-- ACTION BUTTONS -->
+    <div style="margin-top:30px;">
+      <a href="user/signup.html"
+         style="background:#2563eb;color:#fff;padding:14px 24px;
+         text-decoration:none;border-radius:8px;display:inline-block;margin-right:10px;">
+        Create Account
+      </a>
+
+      <a href="user/login.html"
+         style="border:1px solid #374151;color:#fff;padding:14px 24px;
+         text-decoration:none;border-radius:8px;display:inline-block;">
+        Login
+      </a>
+    </div>
+
+  </div>
+
+  <!-- LIVE MARKET CARD -->
+  <div style="background:#111827;margin:20px;border-radius:12px;padding:15px;">
+    <strong>BTC/USD</strong>
+    <span style="color:#22c55e;"> $88,555.00</span><br>
+    <small style="opacity:0.7;">Real-time data • Updated</small>
+  </div>
+
+  <!-- POPUP NOTIFICATION -->
+  <div id="popup"
+       style="position:fixed;bottom:20px;left:20px;
+       background:#111827;color:#ffffff;
+       padding:14px 18px;border-radius:10px;
+       font-size:14px;display:none;
+       box-shadow:0 10px 30px rgba(0,0,0,0.4);
+       z-index:9999;">
+  </div>
+
+  <script>
+    const notifications = [
+      "User A*** just withdrew $20,000 • London",
+      "User M*** successfully withdrew $7,500 • Berlin",
+      "User J*** completed a withdrawal of $15,200 • Toronto",
+      "User S*** received profits of $9,800 • Dubai",
+      "User R*** withdrew $25,000 • New York"
+    ];
+
+    let index = 0;
+    const popup = document.getElementById("popup");
+
+    function showPopup() {
+      popup.innerText = notifications[index];
+      popup.style.display = "block";
+
+      setTimeout(() => {
+        popup.style.display = "none";
+      }, 4000);
+
+      index = (index + 1) % notifications.length;
+    }
+
+    setInterval(showPopup, 9000);
+  </script>
 
 </body>
 </html>
