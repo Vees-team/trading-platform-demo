@@ -1,0 +1,27 @@
+<script>
+    function verifyEmail() {
+        localStorage.setItem("emailVerified", "true");
+        document.getElementById("emailStatus").innerText = "Verified";
+        document.getElementById("emailStatus").style.color = "green";
+        alert("Email verified successfully.");
+    }
+
+    function approveKYC() {
+        localStorage.setItem("kycApproved", "true");
+        document.getElementById("kycStatus").innerText = "Approved";
+        document.getElementById("kycStatus").style.color = "green";
+        alert("KYC approved.");
+    }
+
+    function enableWithdrawals() {
+        localStorage.setItem("withdrawalsEnabled", "true");
+        alert("Withdrawals enabled for this account.");
+    }
+</script>
+
+<h1>Admin Panel</h1>
+<div id="emailStatus">Pending</div>
+<button onclick="verifyEmail()">Verify Email</button>
+<div id="kycStatus">Pending</div>
+<button onclick="approveKYC()">Approve KYC</button>
+<button onclick="enableWithdrawals()">Enable Withdrawals</button>
