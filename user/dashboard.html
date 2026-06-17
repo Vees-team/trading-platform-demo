@@ -1,55 +1,554 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <title>User Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard Prototype - Sidebar + Hamburger</title>
+  <style>
+    :root{
+      --bg:#0f1720;
+      --panel:#0b1220;
+      --muted:#94a3b8;
+      --accent:#2dd4bf;
+      --accent-2:#60a5fa;
+      --live:#10b981;
+      --pro:#f97316;
+      --ai:#7c3aed;
+      --card:#0b1520;
+      --glass: rgba(255,255,255,0.03);
+      --radius:12px;
+      --text:#e6eef8;
+      --shadow: 0 6px 18px rgba(2,6,23,0.6);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#071021 0%, #071522 100%);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      min-height:100vh;
+      align-items:stretch;
+    }
+
+    /* Layout */
+    .app{
+      width:100%;
+      display:grid;
+      grid-template-columns: 300px 1fr;
+      gap:20px;
+      padding:20px;
+    }
+
+    /* Collapsed (mobile) */
+    .app.collapsed{
+      grid-template-columns: 72px 1fr;
+    }
+
+    header.topbar{
+      grid-column:2;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 18px;
+      background:transparent;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#1f2937,#111827);
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--muted)
+    }
+    .balance{font-size:14px;color:var(--muted)}
+
+    /* Sidebar */
+    nav.sidebar{
+      background:linear-gradient(180deg, rgba(12,18,28,0.9), rgba(8,12,18,0.9));
+      padding:18px;
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      height:calc(100vh - 40px);
+      overflow:auto;
+      position:relative;
+      transition:width 220ms ease;
+    }
+
+    .hamburger{
+      display:none;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+      padding:8px;
+      border-radius:10px;
+      background:var(--glass);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    .user{
+      display:flex;align-items:center;gap:12px;margin-bottom:12px;
+    }
+    .avatar{
+      width:44px;height:44px;border-radius:50%;background:#243447;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--muted)
+    }
+    .username{font-weight:600}
+    .small{font-size:13px;color:var(--muted)}
+
+    .menu-section{
+      margin-top:14px;
+      padding-top:10px;
+      border-top:1px dashed rgba(255,255,255,0.03);
+    }
+    .section-title{font-size:12px;color:var(--muted);margin:6px 0 10px 6px;text-transform:uppercase;letter-spacing:0.08em}
+
+    ul.menu{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+    li.item{
+      display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;
+      color:var(--text);cursor:pointer;
+      transition:background 150ms, transform 120ms;
+      outline:none;
+    }
+    li.item:hover{background:rgba(255,255,255,0.02);transform:translateY(-1px)}
+    li.item:focus{box-shadow:0 0 0 3px rgba(96,165,250,0.09)}
+    li.item.active{background:linear-gradient(90deg, rgba(96,165,250,0.08), rgba(45,212,191,0.04));border:1px solid rgba(96,165,250,0.06)}
+
+    .icon{
+      width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:600
+    }
+    .label{flex:1;display:flex;flex-direction:column}
+    .label .title{font-weight:600;font-size:14px}
+    .label .subtitle{font-size:12px;color:var(--muted)}
+
+    .badge{
+      padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700;color:#fff;
+    }
+    .badge.live{background:var(--live)}
+    .badge.pro{background:var(--pro)}
+    .badge.ai{background:var(--ai)}
+
+    .nested{
+      margin-left:46px;margin-top:6px;display:flex;flex-direction:column;gap:6px
+    }
+    .nested .item{padding:8px 10px;border-radius:8px;background:transparent;font-size:13px;color:var(--muted)}
+    .nested .item:hover{background:rgba(255,255,255,0.02);color:var(--text)}
+    .caret{margin-left:auto;color:var(--muted);font-size:12px}
+
+    /* Main content mockup */
+    main.content{
+      grid-column:2;
+      padding:18px;
+      display:flex;flex-direction:column;gap:18px;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:18px;border-radius:14px;box-shadow:var(--shadow);
+    }
+    .hero{display:flex;gap:18px;align-items:center;justify-content:space-between}
+    .hero .left{display:flex;flex-direction:column;gap:6px}
+    .big{font-size:28px;font-weight:700}
+    .muted{color:var(--muted)}
+
+    .market-row{display:flex;gap:12px;flex-wrap:wrap}
+    .ticker{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;min-width:160px;flex:1}
+    .ticker .pair{font-weight:700}
+    .green{color:var(--live)}
+    .red{color:#ef4444}
+
+    /* Quick trade */
+    .quick-trade{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .input{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:8px;color:var(--text);min-width:160px}
+    .btn{background:linear-gradient(90deg,var(--accent-2),var(--accent));padding:10px 16px;border-radius:10px;border:none;color:#04203a;font-weight:700;cursor:pointer}
+
+    /* Footer quick actions */
+    .footer-actions{position:fixed;right:18px;bottom:18px;display:flex;gap:12px}
+    .fab{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#0ea5a7,#3b82f6);display:flex;align-items:center;justify-content:center;color:white;font-weight:800;box-shadow:var(--shadow);cursor:pointer}
+
+    /* Responsive */
+    @media (max-width:900px){
+      .app{grid-template-columns:72px 1fr}
+      nav.sidebar{padding:12px;border-radius:10px}
+      .hamburger{display:flex}
+      .brand .balance{display:none}
+      header.topbar{padding:8px 12px}
+    }
+    @media (max-width:520px){
+      body{padding:0}
+      .app{gap:8px;padding:8px}
+      nav.sidebar{position:fixed;left:8px;top:8px;z-index:40;height:calc(100vh - 16px)}
+      main.content{padding:10px}
+    }
+
+    /* small utility */
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  </style>
 </head>
+<body>
+  <div class="app" id="app">
+    <nav class="sidebar" id="sidebar" aria-label="Main sidebar">
+      <button class="hamburger" id="hamburger" aria-expanded="true" aria-controls="menu" title="Toggle navigation">
+        ☰
+      </button>
 
-<body style="margin:0;background:#0b0f1a;color:#ffffff;font-family:Arial;">
+      <div class="user" aria-hidden="false">
+        <div class="avatar" aria-hidden="true">M</div>
+        <div>
+          <div class="username">Meen fohm</div>
+          <div class="small">Account Balance: <strong>$0.00</strong></div>
+        </div>
+      </div>
 
-  <!-- HEADER -->
-  <div style="padding:20px;background:#111827;">
-    <h2>Dashboard</h2>
-    <p style="opacity:0.7;font-size:14px;">
-      Account Status: <span style="color:#22c55e;">Active</span>
-    </p>
+      <div class="menu-section" role="navigation" aria-label="Overview and main">
+        <div class="section-title">Live Market <span class="badge live" style="margin-left:10px">LIVE</span></div>
+        <ul class="menu" id="menu" role="menu">
+          <li class="item active" role="menuitem" tabindex="0" data-route="dashboard">
+            <div class="icon">🏠</div>
+            <div class="label"><div class="title">Dashboard</div><div class="subtitle">Overview</div></div>
+            <div class="badge" style="background:transparent;color:var(--muted)"> </div>
+          </li>
+
+          <li class="item" role="menuitem" tabindex="-1" data-route="account">
+            <div class="icon">📄</div>
+            <div class="label"><div class="title">Account Statement</div><div class="subtitle">Transactions</div></div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="menu-section">
+        <div class="section-title">Portfolio & Investments</div>
+        <ul class="menu">
+          <li class="item" role="menuitem" tabindex="-1" data-route="plans">
+            <div class="icon">📦</div>
+            <div class="label"><div class="title">Investment Plans</div><div class="subtitle">Choose a plan</div></div>
+          </li>
+          <li class="item" role="menuitem" tabindex="-1" data-route="portfolio">
+            <div class="icon">💼</div>
+            <div class="label"><div class="title">My Portfolio</div><div class="subtitle">Holdings</div></div>
+          </li>
+          <li class="item" role="menuitem" tabindex="-1" data-route="performance">
+            <div class="icon">📈</div>
+            <div class="label"><div class="title">Performance History</div><div class="subtitle">Past trades</div></div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="menu-section">
+        <div class="section-title">Trading & Markets</div>
+        <ul class="menu">
+          <li class="item" role="menuitem" tabindex="-1" data-route="livemarkets">
+            <div class="icon">📊</div>
+            <div class="label"><div class="title">Live Markets</div><div class="subtitle">Realtime prices</div></div>
+            <div class="badge live">Live</div>
+          </li>
+
+          <li class="item" role="menuitem" tabindex="-1" data-route="copytrading">
+            <div class="icon">🔁</div>
+            <div class="label"><div class="title">Copy Trading</div><div class="subtitle">Follow top traders</div></div>
+            <div class="badge pro">Pro</div>
+          </li>
+
+          <li class="item" role="menuitem" tabindex="-1" data-route="aibots">
+            <div class="icon">🤖</div>
+            <div class="label"><div class="title">AI Trading Bots</div><div class="subtitle">Automated strategies</div></div>
+            <div class="badge ai">AI</div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="menu-section">
+        <div class="section-title">Account Management</div>
+        <ul class="menu">
+          <li class="item" role="menuitem" tabindex="-1" data-route="profile">
+            <div class="icon">⚙️</div>
+            <div class="label"><div class="title">Profile Settings</div><div class="subtitle">Manage account</div></div>
+          </li>
+          <li class="item" role="menuitem with-children" tabindex="-1" data-route="identity" aria-haspopup="true" aria-expanded="false">
+            <div class="icon">🧾</div>
+            <div class="label"><div class="title">Identity Verification</div><div class="subtitle">KYC & documents</div></div>
+            <div class="caret">▸</div>
+          </li>
+
+          <div class="nested" id="identity-nested" hidden>
+            <li class="item" role="menuitem" tabindex="-1" data-route="id-upload"><div class="label"><div class="title">Upload Documents</div></div></li>
+            <li class="item" role="menuitem" tabindex="-1" data-route="id-status"><div class="label"><div class="title">Verification Status</div></div></li>
+          </div>
+        </ul>
+      </div>
+
+      <div class="menu-section">
+        <div class="section-title">Support & More</div>
+        <ul class="menu">
+          <li class="item" role="menuitem" tabindex="-1" data-route="support">
+            <div class="icon">❓</div>
+            <div class="label"><div class="title">Support Center</div><div class="subtitle">Help & FAQ</div></div>
+          </li>
+          <li class="item" role="menuitem" tabindex="-1" data-route="referral">
+            <div class="icon">🎁</div>
+            <div class="label"><div class="title">Referral Program</div><div class="subtitle">Invite friends</div></div>
+            <div class="badge" style="background:#0ea5a7">5%</div>
+          </li>
+        </ul>
+      </div>
+
+      <div style="margin-top:18px;display:flex;gap:8px;align-items:center;justify-content:space-between">
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="avatar" style="width:36px;height:36px">EN</div>
+          <div class="small">EN</div>
+        </div>
+        <button id="signout" class="btn" style="background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted);font-size:13px">Sign Out</button>
+      </div>
+    </nav>
+
+    <main class="content" id="main">
+      <header class="topbar" role="banner">
+        <div class="brand">
+          <div class="logo">G</div>
+          <div>
+            <div style="font-weight:700">Welcome back, Gains Uber!</div>
+            <div class="balance muted">LIVE BTC: $68,320 &nbsp; ETH: $1,988 &nbsp; Balance: $17,201.00</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="small muted">Last updated: Feb 21, 2026 04:39 PM</div>
+          <button class="btn" id="connectBtn">Connect Wallet</button>
+        </div>
+      </header>
+
+      <section class="card hero" aria-labelledby="account-heading">
+        <div class="left">
+          <div id="account-heading" class="big">Account Balance</div>
+          <div class="muted">Your available funds</div>
+          <div style="margin-top:8px;font-size:22px;font-weight:800">$17,201.00</div>
+          <div class="muted" style="margin-top:6px">Available for Withdrawal</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+          <div style="background:rgba(255,255,255,0.02);padding:8px 12px;border-radius:10px">Total Profit <div style="font-weight:700;margin-top:6px">$10,200.00</div></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn">Deposit</button>
+            <button class="btn" style="background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">Withdraw</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-weight:700">Market Overview</div>
+          <div class="muted">View History</div>
+        </div>
+        <div class="market-row" style="margin-top:12px">
+          <div class="ticker">
+            <div class="pair">BTC/USDT</div>
+            <div style="font-weight:700">68,317 <span class="green">+0.49%</span></div>
+          </div>
+          <div class="ticker">
+            <div class="pair">ETH/USDT</div>
+            <div style="font-weight:700">1,987.78 <span class="green">+1.03%</span></div>
+          </div>
+          <div class="ticker">
+            <div class="pair">EUR/USD</div>
+            <div style="font-weight:700">-- <span class="muted">--</span></div>
+          </div>
+          <div class="ticker">
+            <div class="pair">AAPL</div>
+            <div style="font-weight:700">195.10 <span class="green">+1.54%</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-weight:700">Quick Trade</div>
+          <div class="muted">Start a new trade instantly</div>
+        </div>
+
+        <div class="quick-trade" style="margin-top:12px">
+          <select class="input" id="asset">
+            <option>EURUSD</option>
+            <option>BTCUSDT</option>
+            <option>ETHUSDT</option>
+            <option>AAPL</option>
+          </select>
+          <input class="input" id="amount" type="number" placeholder="USD Invest Amount (0.00)" min="0" />
+          <select class="input" id="leverage"><option>1x</option><option>2x</option><option>5x</option></select>
+          <select class="input" id="expiration"><option>1m</option><option>30m</option><option>1h</option></select>
+          <button class="btn" id="buyBtn">BUY</button>
+          <button class="btn" id="sellBtn" style="background:linear-gradient(90deg,#ef4444,#f97316);color:white">SELL</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div style="font-weight:700">Latest Trades</div>
+        <div style="margin-top:8px" aria-live="polite" id="tradesList">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.03)">
+            <div>EURUSD — Mon, Jan 19, 2026 4:33 PM</div>
+            <div style="font-weight:700;color:var(--accent)">WIN +20%</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.03)">
+            <div>EURUSD — Mon, Jan 19, 2026 4:33 PM</div>
+            <div style="font-weight:700;color:var(--muted)">$1,000.00 Buy</div>
+          </div>
+        </div>
+      </section>
+
+      <section style="height:120px"></section>
+    </main>
+
+    <div class="footer-actions" aria-hidden="true">
+      <div class="fab" title="Support">💬</div>
+    </div>
   </div>
 
-  <!-- STATS -->
-  <div style="padding:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:15px;">
+  <script>
+    // Minimal navigation + accessibility logic
+    (function(){
+      const app = document.getElementById('app');
+      const sidebar = document.getElementById('sidebar');
+      const menu = document.getElementById('menu');
+      const hamburger = document.getElementById('hamburger');
+      const nestedToggle = document.querySelector('[data-route="identity"]');
+      const nestedList = document.getElementById('identity-nested');
+      const menuItems = Array.from(document.querySelectorAll('nav.sidebar .item'));
+      const main = document.getElementById('main');
 
-    <div style="background:#111827;padding:15px;border-radius:10px;">
-      <strong>Total Deposits</strong><br>
-      <span style="font-size:18px;">$0.00</span>
-    </div>
+      // Initial collapsed state based on viewport
+      function setCollapsedByWidth() {
+        if (window.innerWidth <= 900) app.classList.add('collapsed');
+        else app.classList.remove('collapsed');
+      }
+      setCollapsedByWidth();
+      window.addEventListener('resize', setCollapsedByWidth);
 
-    <div style="background:#111827;padding:15px;border-radius:10px;">
-      <strong>Total Profits</strong><br>
-      <span style="font-size:18px;">$0.00</span>
-    </div>
+      // Hamburger toggle
+      hamburger.addEventListener('click', () => {
+        const collapsed = app.classList.toggle('collapsed');
+        hamburger.setAttribute('aria-expanded', String(!collapsed));
+        // focus the first menu item when opening
+        if(!collapsed){
+          const first = menu.querySelector('.item');
+          first && first.focus();
+        }
+      });
 
-    <div style="background:#111827;padding:15px;border-radius:10px;">
-      <strong>Bonuses</strong><br>
-      <span style="font-size:18px;">$0.00</span>
-    </div>
+      // Menu activation (hash-based routing)
+      function activateRoute(route) {
+        menuItems.forEach(it => {
+          if (it.dataset.route === route){
+            it.classList.add('active');
+            it.tabIndex = 0;
+            it.setAttribute('aria-current','page');
+            it.focus();
+          } else {
+            it.classList.remove('active');
+            it.tabIndex = -1;
+            it.removeAttribute('aria-current');
+          }
+        });
+        // update content title (demo)
+        const titleMap = {
+          dashboard: 'Account Balance',
+          account: 'Account Statement',
+          plans: 'Investment Plans',
+          portfolio: 'My Portfolio',
+          performance: 'Performance History',
+          livemarkets: 'Live Markets',
+          copytrading: 'Copy Trading',
+          aibots: 'AI Trading Bots',
+          profile: 'Profile Settings',
+          identity: 'Identity Verification',
+          support: 'Support Center',
+          referral: 'Referral Program',
+        };
+        const heading = main.querySelector('.big');
+        if(heading) heading.textContent = titleMap[route] || 'Dashboard';
+        location.hash = '#/'+route;
+      }
 
-    <div style="background:#111827;padding:15px;border-radius:10px;">
-      <strong>Withdrawals</strong><br>
-      <span style="font-size:18px;">Locked</span>
-    </div>
+      // On click select
+      menuItems.forEach(it => {
+        it.addEventListener('click', (e) => {
+          const route = it.dataset.route;
+          // handle identity with children toggle
+          if(route === 'identity'){
+            const expanded = nestedList.hidden;
+            nestedList.hidden = !expanded;
+            it.setAttribute('aria-expanded', String(expanded));
+            it.querySelector('.caret').textContent = expanded ? '▾' : '▸';
+            return;
+          }
+          activateRoute(route);
+        });
 
-  </div>
+        // keyboard support: Enter/Space activates; arrows navigate
+        it.addEventListener('keydown', (e) => {
+          const idx = menuItems.indexOf(it);
+          if(e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            it.click();
+          } else if(e.key === 'ArrowDown'){
+            e.preventDefault();
+            const next = menuItems[idx+1] || menuItems[0];
+            next.focus();
+          } else if(e.key === 'ArrowUp'){
+            e.preventDefault();
+            const prev = menuItems[idx-1] || menuItems[menuItems.length-1];
+            prev.focus();
+          } else if(e.key === 'Home'){
+            e.preventDefault();
+            menuItems[0].focus();
+          } else if(e.key === 'End'){
+            e.preventDefault();
+            menuItems[menuItems.length-1].focus();
+          }
+        });
+      });
 
-  <!-- STATUS -->
-  <div style="margin:20px;background:#111827;padding:20px;border-radius:10px;">
-    <p>
-      🔒 Withdrawals and funding actions are enabled only after
-      KYC verification and admin approval.
-    </p>
-    <p style="opacity:0.7;font-size:14px;">
-      Please follow the verification steps provided by your account manager.
-    </p>
-  </div>
+      // Initialize from hash or default
+      function initFromHash(){
+        const h = location.hash.replace('#/','') || 'dashboard';
+        const match = menuItems.find(it => it.dataset.route === h);
+        if(match) activateRoute(h);
+        else activateRoute('dashboard');
+      }
+      initFromHash();
 
+      // Basic simulated actions
+      document.getElementById('buyBtn').addEventListener('click', () => {
+        const asset = document.getElementById('asset').value;
+        const amount = document.getElementById('amount').value || '0';
+        const trades = document.getElementById('tradesList');
+        const el = document.createElement('div');
+        el.style.display='flex';el.style.justifyContent='space-between';el.style.padding='8px 0';
+        el.innerHTML = `<div>${asset} — Just now</div><div style="font-weight:700;color:var(--accent)">BUY $${Number(amount).toFixed(2)}</div>`;
+        trades.prepend(el);
+      });
+
+      // keyboard: ESC closes nested or collapses on mobile
+      document.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape'){
+          if(!nestedList.hidden){
+            nestedList.hidden = true;
+            nestedToggle && nestedToggle.setAttribute('aria-expanded','false');
+            nestedToggle && nestedToggle.querySelector('.caret').textContent='▸';
+          } else if(window.innerWidth <= 900 && !app.classList.contains('collapsed')){
+            app.classList.add('collapsed');
+            hamburger.setAttribute('aria-expanded','false');
+          }
+        }
+      });
+
+      // Accessibility: announce route changes
+      const live = document.createElement('div');
+      live.setAttribute('aria-live','polite');
+      live.className='sr-only';
+      document.body.appendChild(live);
+      const obs = new MutationObserver(() => {
+        const active = document.querySelector('nav.sidebar .item.active .title');
+        live.textContent = active ? active.textContent + ' selected' : '';
+      });
+      obs.observe(document.querySelector('nav.sidebar'), {subtree:true, childList:true, attributes:true, attributeFilter:['class']});
+    })();
+  </script>
 </body>
 </html>
